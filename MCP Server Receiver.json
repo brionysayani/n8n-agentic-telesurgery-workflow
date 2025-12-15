@@ -1,0 +1,69 @@
+{
+  "name": "MCP Server Receiver",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mcp-server-receiver",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6e5f7179-8ed1-4e91-9704-dbc537be1967",
+      "name": "Webhook",
+      "webhookId": "d428a16d-760e-44b4-8e11-4a926ab0ff27"
+    },
+    {
+      "parameters": {
+        "sendTo": "agenticmarketers@gmail.com",
+        "subject": "[MCP Notification] Security Event Received",
+        "message": "=Event: {{$json[\"body\"][\"event\"]}}  \nRemote ID: {{$json[\"body\"][\"remote_id\"]}}  \nReason: {{$json[\"body\"][\"reason\"]}}  \nTimestamp: {{$json[\"body\"][\"timestamp\"]}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e90ec907-6b3a-4dae-b5ff-381294ed6a69",
+      "name": "Send a message",
+      "webhookId": "ffeeb01c-5ed8-41b6-9ce6-1a366c903cac",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WIVcYGnZpWbSfc6F",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9a8179af-ed29-46b6-a5ce-9cec59af39ea",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a4ab216ead7c55c3008048fd4bb5065ed85822151e2f0cd0d483fb017d9660c7"
+  },
+  "id": "qH1tE9tNU3cdE453",
+  "tags": []
+}

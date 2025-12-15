@@ -1,0 +1,159 @@
+{
+  "name": "TeleHealth_Secured_MCP",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://gist.githubusercontent.com/ramyag21/4d088a88b6249baf447e7604a2cd7efc/raw/a49f7c1fd642059402a240862dfdf4d97be750ba/telehealth.log",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "963a8cf3-d3a0-459e-a413-d9cf6ae4cac6",
+      "name": "Fetch Logs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $json.body || $json.data || $json;  // Try common locations\nif (!response || typeof response !== 'string') {\n  throw new Error(\"Response body is undefined or not a string\");\n}\n\nconst lines = response.split('\\n');\nconst anomalies = [];\n\nfor (const line of lines) {\n  try {\n    const log = JSON.parse(line);\n    if (log.event === \"unauthorized_access\" || log.event === \"connection_lost\") {\n      anomalies.push(log);\n    }\n  } catch (e) {\n    // Skip malformed lines\n  }\n}\n\nreturn anomalies.map(item => ({ json: item }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "a4c65163-4f41-4330-8bcf-a238c608c02a",
+      "name": "Detect Anomalies"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mcp-xdr-alert",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5ad82a82-e5ff-414c-8a0c-b83ef178be73",
+      "name": "Webhook",
+      "webhookId": "e8283eb8-3c90-4537-9301-179e315aa9c4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ramyaganesh992.app.n8n.cloud/webhook/mcp-server-receiver",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "remote_id",
+              "value": "={{$json[\"remote_id\"]}}"
+            },
+            {
+              "name": "event",
+              "value": "={{$json[\"event_type\"]}}"
+            },
+            {
+              "name": "reason",
+              "value": "={{$json[\"alert_reason\"]}}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{$json[\"timestamp\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        0
+      ],
+      "id": "1de370fb-c58a-4b30-94ec-dfbb1ffde134",
+      "name": "POST alert to MCP Server"
+    },
+    {
+      "parameters": {
+        "jsCode": "const remoteId = $json[\"remote_id\"];\nconst event = $json[\"event\"];\n\nlet reason;\nif (event === \"unauthorized_access\") {\n  reason = \"Unauthorized access attempt detected\";\n} else if (event === \"connection_lost\") {\n  reason = \"Device connection lost\";\n} else if (event === \"connection_success\") {\n  reason = \"Normal connection established\";\n} else {\n  reason = \"Unknown event\";\n}\n\nreturn {\n  json: {\n    remote_id: remoteId,\n    event_type: event,\n    alert_reason: reason,\n    timestamp: $json[\"timestamp\"]\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "318f2184-9671-46fe-bfd3-9ffa1a7ec428",
+      "name": "Isolate Threat Device"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Fetch Logs": {
+      "main": [
+        [
+          {
+            "node": "Detect Anomalies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Anomalies": {
+      "main": [
+        [
+          {
+            "node": "Isolate Threat Device",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Isolate Threat Device": {
+      "main": [
+        [
+          {
+            "node": "POST alert to MCP Server",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch Logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0b9544d8-3f1d-472c-bd8b-cf535cd22ade",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a4ab216ead7c55c3008048fd4bb5065ed85822151e2f0cd0d483fb017d9660c7"
+  },
+  "id": "1fIOYSdro2clM3Ah",
+  "tags": []
+}

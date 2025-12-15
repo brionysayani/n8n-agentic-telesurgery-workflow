@@ -1,0 +1,1004 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        400
+      ],
+      "id": "f89bb521-6773-4b67-b930-0426a7483e17",
+      "name": "Start the flow"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "LakshinPathak",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "Telesurgery-3",
+          "mode": "name"
+        },
+        "filePath": "Tele.xlsx",
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        272
+      ],
+      "id": "c8d8b3ff-24f8-40e7-b0ad-b9d216ece03d",
+      "name": "Get a file",
+      "webhookId": "b7f40e40-1b07-4fe9-bc13-25f9bf994d73",
+      "credentials": {
+        "githubApi": {
+          "id": "UUKo0We7DhzDBV7e",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "LakshinPathak",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "Telesurgery-3",
+          "mode": "name"
+        },
+        "filePath": "Tele.xlsx",
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        -176,
+        592
+      ],
+      "id": "d022c5f7-eb95-4410-bf10-36edda3254b5",
+      "name": "Fetching Data",
+      "webhookId": "2610b19d-5501-4e24-9bf7-236322bf402f",
+      "credentials": {
+        "githubApi": {
+          "id": "UUKo0We7DhzDBV7e",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-05-20",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        144,
+        464
+      ],
+      "id": "5cd9deb6-bcd2-423e-a7a7-4f54fef44b76",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "WAeGinZLsJLCkjUs",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are DoctorAI, a remote telesurgeon.\n\nYour task:\n1. Based on the input diagnosis, identify which type of telesurgery is needed:\n   - \"heart\" (e.g., bypass)\n   - \"brain\" (e.g., tumor removal)\n   - \"orthopedic\" (e.g., knee replacement)\n\n2. For each diagnosis input, return the correct surgery type and step-by-step instructions.\n\nIMPORTANT:\n- Only return valid JSON.\n- No explanation.\n- No markdown.\n- No code blocks.\n- Only respond with the correct JSON block.\n- Format your JSON exactly like the examples below, based on the chosen surgery.\n\n--- FORMAT (choose one block only) ---\n\nIf HEART:\n{\n  \"surgery_type\": \"heart\",\n  \"steps\": [\n    \"Administer anesthesia\",\n    \"Insert trocars and robotic arms\",\n    \"Stabilize the heart region\",\n    \"Perform bypass grafting using robotic tools\",\n    \"Suture the graft site\",\n    \"Remove tools and close incision\",\n    \"Begin post-op monitoring\"\n  ],\n  \"status\": \"ready_for_robotic_surgery\"\n}\n\nIf BRAIN:\n{\n  \"surgery_type\": \"brain\",\n  \"steps\": [\n    \"Administer general anesthesia\",\n    \"Map the brain using MRI guidance\",\n    \"Create access via small skull incision\",\n    \"Insert robotic micro-tools\",\n    \"Excise tumor tissue with precision\",\n    \"Seal blood vessels\",\n    \"Close skull opening and skin\",\n    \"Begin neuro-monitoring\"\n  ],\n  \"status\": \"ready_for_robotic_surgery\"\n}\n\nIf ORTHOPEDIC:\n{\n  \"surgery_type\": \"orthopedic\",\n  \"steps\": [\n    \"Administer spinal or general anesthesia\",\n    \"Position patient and expose joint\",\n    \"Use robotic guides to remove damaged bone\",\n    \"Insert prosthetic components\",\n    \"Secure with robotic screw system\",\n    \"Close the site and apply dressing\",\n    \"Start physiotherapy protocol\"\n  ],\n  \"status\": \"ready_for_robotic_surgery\"\n}\n\nRespond only with structured JSON, not inside a string or markdown.\n\nExample format:\n{\n  \"surgery_type\": \"heart\",\n  \"steps\": [\n    \"Step 1\",\n    \"Step 2\"\n  ],\n  \"status\": \"ready_for_robotic_surgery\"\n}\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        320
+      ],
+      "id": "388a86fe-4783-40e5-a02d-2318043b8dc6",
+      "name": "Doctor Agent"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1072,
+        336
+      ],
+      "id": "58759693-4cc4-465a-90fb-750e2f405b6e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        32,
+        784
+      ],
+      "id": "41c9dee0-89b2-4379-8fee-55e9fae2a634",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "WAeGinZLsJLCkjUs",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are SecurityAgent. Given the label from network data, identify if it’s a DDoS attack. If label is \"smurf\", \"neptune\", \"back\", or \"teardrop\", return:\n\n{\n  \"alert\": \"true\"\n}\n\nOtherwise, return:\n\n{\n  \"alert\": \"false\"\n}\n\nDo NOT explain. Do NOT return code block. Just raw JSON.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        592
+      ],
+      "id": "4d9a7357-ebbe-4104-beb6-d1527b0c6d42",
+      "name": "Security Agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "de3ecbe4-ee9c-4e08-9dc4-101a1b3a752b",
+              "leftValue": "={{ $json[\"output\"] }}",
+              "rightValue": "\"alert\": \"true\"",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        592
+      ],
+      "id": "02ed8bbe-aca8-4ad2-aab3-57ffbf7a25bf",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        656,
+        768
+      ],
+      "id": "1b676721-46ed-4c35-b30f-0e14a44d6d80",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "WAeGinZLsJLCkjUs",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are Protocol Switcher. Analyze the following network data for any signs of DDoS attack. If the data suggests an attack, respond with:\n\n{\n  \"action\": \"switch\",\n  \"new_protocol\": \"udp\",\n  \"new_server\": \"https://backup-server.com\"\n}\n\nIf not, respond with:\n\n{\n  \"action\": \"keep\",\n  \"new_protocol\": \"tcp\",\n  \"new_server\": \"https://main-server.com\"\n}\n\nDo NOT explain. Respond only with raw JSON.\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        656,
+        576
+      ],
+      "id": "8050c0c0-fd8f-41a0-a807-d1a7ab2740c6",
+      "name": "Protocol Switcher"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        656
+      ],
+      "id": "3b369507-329f-4f28-9b16-3727e5165208",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "WAeGinZLsJLCkjUs",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are Robotic Arm Agent, a telesurgery robotic controller. You receive a final instruction from the Feedback Reader Agent in the field `final_instruction`.\n\nYour task:\n- Interpret the instruction.\n- Perform the appropriate surgical action.\n- Output the surgical step taken, and update the surgery status as `completed` or `on hold`.\n\nIf the instruction contains: \n- \"Continue\", then proceed with the predefined surgical steps and mark `status: completed`.\n- \"Hold\", then output: `\"status\": \"on hold\"` and mention reason from insights.\n\nRespond only in valid JSON:\n{\n  \"action_taken\": \"...\",\n  \"status\": \"...\"\n}\n\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1888,
+        336
+      ],
+      "id": "158dba8a-378a-4644-bcd8-30fb817261df",
+      "name": "Robotic Arm"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        608
+      ],
+      "id": "4201a8db-7a09-4770-9ab7-210a959282cd",
+      "name": "Google Gemini Chat Model4",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "WAeGinZLsJLCkjUs",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are the Feedback Reader Agent in a telesurgery system. You receive inputs from multiple agents — including the Doctor Agent and Protocol Switcher — containing surgical plans, diagnostics, or alerts.\n\nYour job is to:\n1. Evaluate any signs of instability or error (e.g., packet loss, protocol switches, sensor faults, or tissue integrity issues).\n2. Extract key insights from these inputs.\n3. Provide clear, actionable final instructions for the Robotic Arm Agent.\n4. If systems are stable, affirm the current surgical plan.\n5. If there are problems, suggest whether to continue, pause, or adjust the surgery.\n\nReturn output in this format:\n{\n  \"insights\": [\"<summary of issues or confirmations>\"],\n  \"final_instruction\": \"<what the robotic arm should do next>\"\n}\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1296,
+        336
+      ],
+      "id": "bb7ad732-f015-4000-848e-6486059bfb67",
+      "name": "Feedback Agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bb0c57dc-07c7-40ad-a7ea-c48044d1672a",
+              "leftValue": "={{ $json[\"status\"].trim() }}\n",
+              "rightValue": "on hold",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2592,
+        272
+      ],
+      "id": "4a7a2b9a-939b-42f9-8b20-78cc26cc176c",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "70f664b5-e9d4-4f53-b7c5-f8ea3043efba",
+              "name": "status",
+              "value": "={{ JSON.parse($json[\"output\"].replace(/```json|```/g, \"\").trim()).status.trim() }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2432,
+        272
+      ],
+      "id": "9d9d63a8-07e6-430c-bef8-75f14d9ff7a7",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are Backup Surgeon AI. If Robotic Arm failed, perform surgery.\n\nIf activated:\n{\n  \"action_taken\": \"performed emergency surgery\",\n  \"status\": \"backup_success\"\n}\n\nIf not needed:\n{\n  \"action_taken\": \"no_action\",\n  \"status\": \"not_required\"\n}\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        2832,
+        240
+      ],
+      "id": "76740411-a2cc-44d1-b168-916913d63b3d",
+      "name": "Backup Surgeon"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2864,
+        544
+      ],
+      "id": "7d1a6cfa-dfd9-46d7-be87-f9a3bc111d9d",
+      "name": "Google Gemini Chat Model5",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "WAeGinZLsJLCkjUs",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1P7AfdXTLsAI-g13nkzhyRN5AtTv0VMQ3PBcwUgDsLjE",
+          "mode": "list",
+          "cachedResultName": "Telesurgery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P7AfdXTLsAI-g13nkzhyRN5AtTv0VMQ3PBcwUgDsLjE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P7AfdXTLsAI-g13nkzhyRN5AtTv0VMQ3PBcwUgDsLjE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Comment": "={{ $json.output.feedback.comments }}",
+            "State": "={{ $json.output.feedback.state }}"
+          },
+          "matchingColumns": [
+            "output"
+          ],
+          "schema": [
+            {
+              "id": "Comment",
+              "displayName": "Comment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1696,
+        320
+      ],
+      "id": "ad88189f-eab9-4676-aa16-92ffd7ffddf7",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iqXL5rnyzOzaHOKO",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        528
+      ],
+      "id": "67ba7260-6057-420e-b23e-46dfced13e17",
+      "name": "Auto-fixing Output Parser"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"feedback\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"state\": { \"type\": \"string\" },\n        \"comments\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" }\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1552,
+        704
+      ],
+      "id": "3bb50f9b-3509-4045-83d6-d6d63d20963c",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1P7AfdXTLsAI-g13nkzhyRN5AtTv0VMQ3PBcwUgDsLjE",
+          "mode": "list",
+          "cachedResultName": "Telesurgery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P7AfdXTLsAI-g13nkzhyRN5AtTv0VMQ3PBcwUgDsLjE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P7AfdXTLsAI-g13nkzhyRN5AtTv0VMQ3PBcwUgDsLjE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        432,
+        432
+      ],
+      "id": "2a56b2b3-90da-46d0-8c03-ed8aeee21985",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iqXL5rnyzOzaHOKO",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "typeVersion": 1,
+      "position": [
+        3024,
+        416
+      ],
+      "id": "a769a0e8-6400-4527-a6b6-c57b18afbb08",
+      "name": "Auto-fixing Output Parser1"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"feedback\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"state\": { \"type\": \"string\" },\n        \"comments\": {\n          \"type\": \"array\",\n          \"items\": { \"type\": \"string\" }\n        }\n      }\n    }\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3104,
+        592
+      ],
+      "id": "636b274b-b53d-4df0-9d35-864e8f7e1a8c",
+      "name": "Feedback_Agent_Comment_Agent"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1P7AfdXTLsAI-g13nkzhyRN5AtTv0VMQ3PBcwUgDsLjE",
+          "mode": "list",
+          "cachedResultName": "Telesurgery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P7AfdXTLsAI-g13nkzhyRN5AtTv0VMQ3PBcwUgDsLjE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 605076278,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P7AfdXTLsAI-g13nkzhyRN5AtTv0VMQ3PBcwUgDsLjE/edit#gid=605076278"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        3328,
+        240
+      ],
+      "id": "e6a8fa97-88d1-4635-9810-739937b4f0e6",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iqXL5rnyzOzaHOKO",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        544
+      ],
+      "id": "98cc4817-d132-4093-bd05-16d301e005cb",
+      "name": "Auto-fixing Output Parser2"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2112,
+        720
+      ],
+      "id": "12031479-4401-4dbb-b597-a55140a5bb09",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "batchSize": 2,
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2176,
+        96
+      ],
+      "id": "61d84e71-1579-455a-ab17-6bf97645d68d",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "621e0229-3842-4a69-ab02-c9a96e8e844a"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start the flow": {
+      "main": [
+        [
+          {
+            "node": "Fetching Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetching Data": {
+      "main": [
+        [
+          {
+            "node": "Security Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Doctor Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Doctor Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Doctor Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Security Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Security Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Feedback Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Protocol Switcher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Protocol Switcher",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Protocol Switcher": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Feedback Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Robotic Arm",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Auto-fixing Output Parser2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Feedback Agent": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Robotic Arm": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Backup Surgeon",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Backup Surgeon",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Auto-fixing Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Robotic Arm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Feedback Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Doctor Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Backup Surgeon",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Feedback_Agent_Comment_Agent": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Backup Surgeon": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Robotic Arm",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser2",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Doctor Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "22240a6c-feb4-4f60-bf08-28385dd61f1c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d297db74f7414dd01e0df6a4fe32f169ef0f616e6bda02b8b51f1e1050dfe564"
+  },
+  "id": "DbjJNucxUy1APqYU",
+  "tags": []
+}
