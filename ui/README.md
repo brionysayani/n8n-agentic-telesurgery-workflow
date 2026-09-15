@@ -19,15 +19,17 @@ It is designed to demonstrate the multi-agent architecture, system orchestration
    ```
    Open `http://localhost:5173` in your browser.
 
+## Deployment to GitHub Pages
+
+This project is configured to automatically deploy to GitHub Pages using GitHub Actions.
+
+1. Ensure the `base` in `ui/vite.config.ts` matches your repository name (e.g., `'/n8n-agentic-telesurgery-workflow/'`).
+2. Commit and push the changes to the `main` branch.
+3. In your GitHub repository settings, go to **Pages**.
+4. Set the Source to **GitHub Actions**.
+5. The included `.github/workflows/deploy.yml` will automatically build and deploy your `/ui` folder.
+
 ## Deployment to Vercel
-
-This project is a standard Vite static site and is ready to be deployed on Vercel.
-
-1. Create a new project in Vercel.
-2. Import the GitHub repository.
-3. Important: Set the **Root Directory** to `ui` in the Vercel project settings.
-4. Leave the Build Command as `npm run build` and Output Directory as `dist`.
-5. Deploy!
 
 ## Technical Stack
 
