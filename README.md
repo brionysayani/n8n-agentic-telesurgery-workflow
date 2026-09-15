@@ -4,26 +4,6 @@
 
 > The project is a research prototype and simulation of an agentic telesurgery control architecture. It is not intended for real-world clinical use.
 
-**Built with:** n8n · Google Gemini · REST APIs · Webhooks · Google Sheets · Gmail · GitHub
-
-## The Problem
-
-Remote telesurgery requires more than simply sending commands from a surgeon to a robotic system.
-
-The communication layer must continuously deal with:
-
-- network latency and packet loss,
-- unstable connectivity,
-- possible cyberattacks,
-- protocol selection,
-- execution failures,
-- and the need for safe fallback behaviour.
-
-Instead of treating these as isolated problems, I explored whether multiple specialized AI agents could coordinate decisions across the entire control loop.
-
-The result is an **agentic orchestration system built in n8n**.
-
----
 ## Proposed Approach Architecture:
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/b5a56110-02fe-407c-9bfa-d417b9afdbcc" />
 
@@ -83,6 +63,25 @@ Evaluate
    ↓
 Recover if required
 ```
+
+**Built with:** n8n · Google Gemini · REST APIs · Webhooks · Google Sheets · Gmail · GitHub
+
+## The Problem
+
+Remote telesurgery requires more than simply sending commands from a surgeon to a robotic system.
+
+The communication layer must continuously deal with:
+
+- network latency and packet loss,
+- unstable connectivity,
+- possible cyberattacks,
+- protocol selection,
+- execution failures,
+- and the need for safe fallback behaviour.
+
+Instead of treating these as isolated problems, I explored whether multiple specialized AI agents could coordinate decisions across the entire control loop.
+
+The result is an **agentic orchestration system built in n8n**.
 
 ---
 
