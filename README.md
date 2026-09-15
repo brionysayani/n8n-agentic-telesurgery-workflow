@@ -1,3 +1,22 @@
+# Agentic Telesurgery Control System
+A multi-agent AI orchestration system that simulates secure remote telesurgery operations by coordinating security detection, network protocol adaptation, surgical decision-making, robotic execution and automated failover.
+
+Built with: n8n · Gemini · REST APIs · Google Sheets · Gmail · GitHub · Webhooks
+
+System: 6 specialized AI agents · structured outputs · conditional routing · failure recovery · external API integrations
+
+## Proposed Approach Architecture:
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/b5a56110-02fe-407c-9bfa-d417b9afdbcc" />
+
+## Telesurgery Workflow:
+<img width="2334" height="612" alt="image" src="https://github.com/user-attachments/assets/33dcfcfb-662b-4b45-bedc-f7c0b63ba310" />
+
+## MCP Server:
+<img width="1990" height="424" alt="image" src="https://github.com/user-attachments/assets/0e1f226b-6d97-4b75-a406-e0121801212c" />
+
+## MCP Server Receiver:
+<img width="928" height="414" alt="image" src="https://github.com/user-attachments/assets/36cc419a-6d4e-41f6-b14b-f8c5d7901375" />
+
 # n8n-agentic-telesurgery-workflow
 n8n workflows for secure, agent-based telesurgery automation
 ## 🏥 Agentic AI–Driven Secure & Fault-Tolerant Telesurgery
